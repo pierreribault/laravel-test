@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: .ci/docker/nginx/Dockerfile
+    working_dir: /app
+    init: true
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - laravel_internal
+      - laravel_external
+    volumes:
+      - storage:/app/storage
+      - cache:/app/bootstrap/cache
+    environment:
+      - WAIT_HOSTS=php-fpm:9000
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: .ci/docker/php-fpm/Dockerfile
+    working_dir: /app
+    init: true
+    restart: always
+    networks:
+      - laravel_internal
+    volumes:
+      - storage:/app/storage
+      - ./app/.env.prod:/app/.env
+    environment:
+      - WAIT_HOSTS=redis:6379, mariadb:3306
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.horizon.schedule: "@every 60s"
+      ofelia.job-exec.horizon.command: "php /app/artisan schedule:run"
+
+  ofelia:
+    build:
+      context: .docker/ofelia
+      dockerfile: Dockerfile
+    init: true
+    networks:
+      - laravel_internal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - WAIT_HOSTS=php-fpm:9000
+
+  redis:
+    image: redis:5.0
+    init: true
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - laravel_internal
+
+  mariadb:
+    image: mariadb:10.4
+    init: true
+    restart: always
+    networks:
+      - laravel_internal
+    environment:
+      MYSQL_ROOT_PASSWORD: laravel
+      MYSQL_DATABASE: laravel
+
+networks:
+  laravel_internal:
+    internal: true
+  laravel_external:
+
+volumes:
+  storage:
+  cache:

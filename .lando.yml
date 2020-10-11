@@ -1,0 +1,46 @@
+name: laravel
+recipe: laravel
+
+config:
+  php: '7.3'
+  webroot: public
+  xdebug: false
+  via: nginx:1.18
+  database: mariadb:10.4
+  cache: redis:5
+
+services:
+  appserver:
+    type: php:custom
+    overrides:
+      image: lando/php:7.3-custom
+      build:
+        context: .ci/lando/php-fpm
+        dockerfile: Dockerfile
+  pma:
+    type: phpmyadmin:5.0
+    overrides:
+      environment:
+        PMA_HOST: database
+  node:
+    type: node
+  mailhog:
+    type: mailhog:v1.0.0
+    portforward: true
+    hogfrom:
+      - appserver
+
+tooling:
+  npm:
+    service: node
+  phpunit:
+    service: appserver
+    cmd: vendor/bin/phpunit
+  redis-cli:
+    service: cache
+
+proxy:
+  pma:
+    - pma-laravel-test.lndo.site
+  mailhog:
+    - mailhog-laravel-test.lndo.site

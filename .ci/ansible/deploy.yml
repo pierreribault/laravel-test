@@ -1,0 +1,45 @@
+---
+- name: Deploy Client project on server
+  hosts: webserver
+  remote_user: "{{ USER }}"
+  tasks:
+  - name: Docker Login {{ PROJECT_NAME }}
+    shell:  "echo {{ CI_JOB_TOKEN }} | docker login --username {{ CI_USER }} --password-stdin https://{{ CI_REGISTRY }}"
+
+  - name: Ensures /home/webdev/{{ PROJECT_NAME }} directory exists
+    file: path=/home/webdev/{{ PROJECT_NAME }} state=directory
+
+  - name: Ensures .env exists
+    stat:
+      path: /home/webdev/{{ PROJECT_NAME }}/.env
+    register: env_exist
+
+  - name: Fail if env file doen't exists
+    fail: msg="Please add .env on /home/webdev/{{ PROJECT_NAME }}"
+    when: env_exist.stat.exists == false
+
+  - name: Check {{ PROJECT_NAME }} status
+    shell: "docker ps | grep -q {{ PROJECT_NAME }} && echo true || echo false"
+    register: already_deploy
+
+  - name: Create storage volume
+    shell: "docker volume create {{ PROJECT_NAME }}-storage"
+    when: already_deploy.stdout == "false"
+
+  - name: Create cache volume
+    shell: "docker volume create {{ PROJECT_NAME }}-cache"
+    when: already_deploy.stdout == "false"
+
+  - name: Generate docker-compose file
+    template:
+      src: docker-compose.j2
+      dest: /home/webdev/{{ PROJECT_NAME }}/docker-compose.yml
+
+  - name: Pull new images before deployment
+    shell: "docker-compose -f /home/webdev/{{ PROJECT_NAME }}/docker-compose.yml pull"
+
+  #- name : Arret des tâches Horizon
+  #  shell: "docker-compose -f /home/webdev/{{ PROJECT_NAME }}/docker-compose.yml exec php-fpm php /app/artisan horizon:terminate"
+
+  - name: Start the project
+    shell: "docker-compose -f /home/webdev/{{ PROJECT_NAME }}/docker-compose.yml up -d"

@@ -1,0 +1,1 @@
+FROM devwithlando/php:7.3-fpm-2

@@ -1,0 +1,49 @@
+php-fpm base:
+  stage: build bases
+  only:
+    refs:
+      - /^(feature|improvement|hotfix)\/.*$/
+    changes:
+      - ".docker/php-fpm/**/*"
+  before_script:
+    - echo "${CI_JOB_TOKEN}" | docker login --username ${CI_USER} --password-stdin "https://${CI_REGISTRY}"
+  script:
+    - docker pull ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base || true
+    - docker build
+      --cache-from ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base
+      --tag ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base
+      -f .docker/php-fpm/base/Dockerfile .
+    - docker push ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base
+
+
+name: Build php-fpm base
+on:
+  push:
+    paths:
+      - '.ci/docker/php-fpm/**'
+    branches:
+      - 'feature/**'
+      - 'improvement/**'
+      - 'hotfix/**'
+jobs:
+  ofelia:
+    name: Publish php-fpm base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Run hadolint on Dockerfile
+        run: "docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --ignore DL3007 - < .ci/docker/php-fpm/base/Dockerfile"
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v1
+        with:
+          context: .
+          file: .ci/docker/php-fpm/base/Dockerfile
+          username: ${{ github.actor }}
+          password: ${{ secrets.PACKAGE_TOKEN }}
+          push: true
+          registry: ghcr.io
+          repository: pierreribault/ofelia
+          tags: latest
