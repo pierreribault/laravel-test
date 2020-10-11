@@ -7,7 +7,7 @@ USER root
 RUN rm /usr/bin/composer
 
 # Copy project
-COPY --chown=www-data:www-data ./application /app
+COPY --chown=www-data:www-data application /app
 RUN chown www-data:www-data /app
 
 USER www-data
