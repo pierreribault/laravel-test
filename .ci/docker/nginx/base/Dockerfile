@@ -10,10 +10,10 @@ ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERS
 RUN chmod +x /wait
 
 # Configuration of Nginx
-COPY ./.ci/docker/nginx/base/conf/appserver.conf /opt/bitnami/nginx/conf/server_blocks/appserver.conf
+COPY .ci/docker/nginx/base/conf/appserver.conf /opt/bitnami/nginx/conf/server_blocks/appserver.conf
 
 # Configuration of Entrypoint
-COPY ./.ci/docker/nginx/base/nginx/docker-entrypoint.sh /docker-entrypoint.sh
+COPY .ci/docker/nginx/base/nginx/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Modify nginx permission
