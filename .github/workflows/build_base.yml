@@ -78,7 +78,7 @@ jobs:
       - name: Add nova repository
         working-directory: ./application
         run: |
-          composer config http-basic.nova.laravel.com ${{ secrets.LARAVEL_NOVA_USER}} ${{ secrets.LARAVEL_NOVA_PASSWORD}}
+          composer config http-basic.nova.laravel.com "${{ secrets.LARAVEL_NOVA_USER}}" "${{ secrets.LARAVEL_NOVA_PASSWORD}}"
 
       - name: Composer install
         working-directory: ./application
