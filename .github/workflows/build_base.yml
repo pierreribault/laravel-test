@@ -131,7 +131,12 @@ jobs:
         working-directory: ./application
         run: |
           composer install --ignore-platform-reqs --no-progress
-          
+
+      - name: Artisan key generate
+        working-directory: ./application
+        run: |
+          php artisan key:generate
+
       - name: PHPunit
         working-directory: ./application
         run: |
