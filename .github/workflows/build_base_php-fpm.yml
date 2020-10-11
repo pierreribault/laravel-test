@@ -30,4 +30,4 @@ jobs:
           context: .
           file: ci/docker/php-fpm/base/Dockerfile
           push: true
-          tags: laravel-test-php-fpm:base
+          tags: ghcr.io/pierreribault/laravel-test-php-fpm:base
