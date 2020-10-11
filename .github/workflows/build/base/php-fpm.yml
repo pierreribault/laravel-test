@@ -1,21 +1,3 @@
-php-fpm base:
-  stage: build bases
-  only:
-    refs:
-      - /^(feature|improvement|hotfix)\/.*$/
-    changes:
-      - ".docker/php-fpm/**/*"
-  before_script:
-    - echo "${CI_JOB_TOKEN}" | docker login --username ${CI_USER} --password-stdin "https://${CI_REGISTRY}"
-  script:
-    - docker pull ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base || true
-    - docker build
-      --cache-from ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base
-      --tag ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base
-      -f .docker/php-fpm/base/Dockerfile .
-    - docker push ${CI_REGISTRY}/${DOCKER_PHP_FPM}:base
-
-
 name: Build php-fpm base
 on:
   push:
@@ -45,5 +27,5 @@ jobs:
           password: ${{ secrets.PACKAGE_TOKEN }}
           push: true
           registry: ghcr.io
-          repository: pierreribault/ofelia
-          tags: latest
+          repository: pierreribault/laravel-test-php-fpm
+          tags: base
