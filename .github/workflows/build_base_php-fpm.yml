@@ -31,7 +31,6 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: ./.ci/docker/php-fpm/base/
-          file: ./Dockerfile
+          file: ./.ci/docker/php-fpm/base/Dockerfile
           push: true
           tags: ghcr.io/pierreribault/laravel-test-php-fpm:base
