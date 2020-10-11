@@ -22,6 +22,7 @@ RUN apt-get update \
     build-essential \
     locales \
     unzip \
+    git \
     supervisor \
     && apt-get clean \
     && rm -rf apt_list.txt \

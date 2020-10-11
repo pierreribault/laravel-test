@@ -36,7 +36,7 @@ jobs:
 
   php-fpm:
     runs-on: ubuntu-latest
-    name: Publish nginx base
+    name: Publish php-fpm base
     steps:
       - uses: actions/checkout@master
 
@@ -100,16 +100,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Add nova repository
-        working-directory: ./application
-        run: |
-          composer config http-basic.nova.laravel.com "${{ secrets.LARAVEL_NOVA_USER}}" "${{ secrets.LARAVEL_NOVA_PASSWORD}}"
-
-      - name: Composer install
-        working-directory: ./application
-        run: |
-          composer install --ignore-platform-reqs --no-progress
-
       - name: Get Composer Cache Directory
         id: composer-cache
         working-directory: ./application
@@ -122,12 +112,29 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+            
+      - name: Add nova repository
+        working-directory: ./application
+        run: |
+          composer config http-basic.nova.laravel.com "${{ secrets.LARAVEL_NOVA_USER}}" "${{ secrets.LARAVEL_NOVA_PASSWORD}}"
+
+      - name: Composer install
+        working-directory: ./application
+        run: |
+          composer install --ignore-platform-reqs --no-progress
 
   npm:
     name: Npm dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -142,13 +149,6 @@ jobs:
         working-directory: ./application
         run: |
           npm run production
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
   phpunit:
     name: PHPunit tests
