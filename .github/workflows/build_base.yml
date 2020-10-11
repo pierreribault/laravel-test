@@ -6,33 +6,61 @@ on:
       - 'improvement/**'
       - 'hotfix/**'
 jobs:
-#  nginx:
-#    runs-on: ubuntu-latest
-#    name: Publish nginx base
-#    steps:
-#      - uses: actions/checkout@master
-#
-#      - name: Run hadolint on Dockerfile
-#        run: "docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --ignore DL3007 - < .docker/nginx/base/Dockerfile"
-#
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v1
-#
-#      - name: Login to GitHub Container Registry
-#        uses: docker/login-action@v1.3.0
-#        with:
-#          registry: ghcr.io
-#          username: ${{ github.repository_owner }}
-#          password: ${{ secrets.PACKAGE_TOKEN }}
-#
-#      - name: Build and push
-#        id: docker_build
-#        uses: docker/build-push-action@v2
-#        with:
-#          file: .docker/nginx/base/Dockerfile
-#          push: true
-#          cache-from: ghcr.io/pierreribault/laravel-test-nginx:base
-#          tags: ghcr.io/pierreribault/laravel-test-nginx:base
+  nginx:
+    runs-on: ubuntu-latest
+    name: Publish nginx base
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Run hadolint on Dockerfile
+        run: "docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --ignore DL3007 - < .docker/nginx/base/Dockerfile"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PACKAGE_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          file: .docker/nginx/base/Dockerfile
+          push: true
+          cache-from: ghcr.io/pierreribault/laravel-test-nginx:base
+          tags: ghcr.io/pierreribault/laravel-test-nginx:base
+
+  php-fpm:
+    runs-on: ubuntu-latest
+    name: Publish nginx base
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Run hadolint on Dockerfile
+        run: "docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --ignore DL3007 - < .docker/php-fpm/base/Dockerfile"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PACKAGE_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          file: .docker/php-fpm/base/Dockerfile
+          push: true
+          cache-from: ghcr.io/pierreribault/laravel-test-php-fpm:base
+          tags: ghcr.io/pierreribault/laravel-test-php-fpm:base
 
   create-env:
     name: Create environment ci file
@@ -121,3 +149,27 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+  phpunit:
+    name: PHPunit tests
+    runs-on: ubuntu-latest
+    needs: [php-fpm, create-env]
+    container:
+      image: ghcr.io/pierreribault/laravel-test-php-fpm:base
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.PACKAGE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: actions/download-artifact@v2
+        with:
+          name: environment-ci
+
+      - run: |
+          mv .env.ci ./application/.env
+          
+      - name: PHPunit
+        working-directory: ./application
+        run: |
+          php artisan test
