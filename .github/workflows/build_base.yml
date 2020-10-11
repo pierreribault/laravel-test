@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [php-fpm]
     container:
-      image: ghcr.io/pierreribault/laravel-test-nginx:base
+      image: ghcr.io/pierreribault/laravel-test-php-fpm:base
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_TOKEN }}
