@@ -103,11 +103,11 @@ jobs:
     steps:
       - name: Add nova repository
         run: |
-          composer config http-basic.nova.laravel.com ${{ secrets.LARAVEL_NOVA_USER}} ${{ secrets.LARAVEL_NOVA_PASSWORD}} --working-dir ${{ github.workflow }}/application
+          composer config http-basic.nova.laravel.com ${{ secrets.LARAVEL_NOVA_USER}} ${{ secrets.LARAVEL_NOVA_PASSWORD}} --working-dir ${{ github.workspace }}/application
 
       - name: Composer install
         run: |
-          composer install --ignore-platform-reqs --no-progress --working-dir ${{ github.workflow }}/application
+          composer install --ignore-platform-reqs --no-progress --working-dir ${{ github.workspace }}/application
 
       - name: Get Composer Cache Directory
         id: composer-cache
