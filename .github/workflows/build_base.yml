@@ -101,11 +101,11 @@ jobs:
     steps:
       - name: Add nova repository
         run: |
-          composer config http-basic.nova.laravel.com ${{ secrets.LARAVEL_NOVA_USER}} ${{ secrets.LARAVEL_NOVA_PASSWORD}}
+          composer config http-basic.nova.laravel.com ${{ secrets.LARAVEL_NOVA_USER}} ${{ secrets.LARAVEL_NOVA_PASSWORD}} --working-dir ./application
 
       - name: Composer install
         run: |
-          composer install --ignore-platform-reqs --no-progress
+          composer install --ignore-platform-reqs --no-progress --working-dir ./application
 
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -130,10 +130,10 @@ jobs:
           node-version: '14'
 
       - run: |
-          npm install
+          npm --prefix ./application install ./application 
 
       - run: |
-          npm run production
+          npm run --prefix ./application production
 
       - uses: actions/cache@v2
         with:
