@@ -64,16 +64,13 @@ jobs:
           path: .env.ci
 
   composer:
-    name: Composer install
+    name: Composer dependencies
     runs-on: ubuntu-latest
     container:
       image: composer:latest
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: pwd
-        run: pwd
 
       - name: Add nova repository
         working-directory: ./application
@@ -87,6 +84,7 @@ jobs:
 
       - name: Get Composer Cache Directory
         id: composer-cache
+        working-directory: ./application
         run: |
           echo "::set-output name=dir::$(composer config cache-files-dir)"
 
@@ -98,7 +96,7 @@ jobs:
             ${{ runner.os }}-composer-
 
   npm:
-    name: Npm run
+    name: Npm dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
