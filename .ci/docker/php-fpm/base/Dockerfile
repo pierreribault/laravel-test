@@ -45,7 +45,7 @@ RUN chmod +x /wait
 RUN ln -sf /dev/stdout /opt/bitnami/php/logs/php-fpm.log
 
 # Configuration of PHP-FPM
-COPY --chown=1001:1001 ./.docker/php-fpm/php-fpm/php-fpm.conf /opt/bitnami/php/etc/php-fpm.d/www.conf
+COPY --chown=1001:1001 .ci/docker/php-fpm/base/php-fpm/php-fpm.conf /opt/bitnami/php/etc/php-fpm.d/www.conf
 COPY .ci/docker/php-fpm/base/php-fpm/php.conf /opt/bitnami/php/etc/conf.d/custom.ini
 
 # Configuration of Supervisor
