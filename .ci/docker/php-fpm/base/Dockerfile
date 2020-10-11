@@ -1,3 +1,5 @@
+FROM composer:1.9 AS composer
+
 FROM bitnami/php-fpm:7.3-prod AS php-fpm
 LABEL maintainer="Pierre Ribault <contact@pierreribault.fr>"
 
@@ -36,6 +38,9 @@ ENV LANG="fr_FR.UTF-8" \
     LC_ALL="fr_FR.UTF-8" \
     XDG_CONFIG_HOME=/app \
     WAIT_VERSION="2.7.3"
+
+# Installation of composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Add Docker-compose-wait
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
