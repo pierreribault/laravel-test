@@ -64,8 +64,7 @@ jobs:
     name: Create environment ci file
     runs-on: ubuntu-latest
     steps:
-      - shell: bash
-        run: |
+      - run: |
           cat << EOF > .env.ci
             APP_NAME=Laravel
             APP_ENV=local
@@ -80,7 +79,9 @@ jobs:
             DB_USERNAME=root
             DB_PASSWORD=laravel
           EOF
-          chown 33:33 .env.ci
+
+      - run: |
+          sudo chown 33:33 .env.ci
 
       - name: Create data file
         uses: actions/upload-artifact@v2
@@ -128,9 +129,11 @@ jobs:
         with:
           node-version: '14'
 
-      - run: npm install
+      - run: |
+          npm install
 
-      - run: npm run production
+      - run: |
+          npm run production
 
       - uses: actions/cache@v2
         with:
