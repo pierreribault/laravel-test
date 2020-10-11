@@ -72,6 +72,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Ls
+        run: ls -l
+
       - name: Add nova repository
         run: |
           composer config http-basic.nova.laravel.com ${{ secrets.LARAVEL_NOVA_USER}} ${{ secrets.LARAVEL_NOVA_PASSWORD}} --working-dir ./application
