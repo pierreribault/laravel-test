@@ -2,7 +2,7 @@ name: Build php-fpm base
 on:
   push:
     paths:
-      - '.ci/docker/php-fpm/**'
+      - 'ci/docker/php-fpm/**'
     branches:
       - 'feature/**'
       - 'improvement/**'
