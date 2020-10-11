@@ -13,7 +13,7 @@ RUN chmod +x /wait
 COPY .ci/docker/nginx/base/conf/appserver.conf /opt/bitnami/nginx/conf/server_blocks/appserver.conf
 
 # Configuration of Entrypoint
-COPY .ci/docker/nginx/base/nginx/docker-entrypoint.sh /docker-entrypoint.sh
+COPY .ci/docker/nginx/base/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Modify nginx permission
