@@ -83,7 +83,7 @@ jobs:
           chown 33:33 .env.ci
 
       - name: Create data file
-        uses: actions/upload-artifact@1
+        uses: actions/upload-artifact@v2
         with:
           name: environment-ci
           path: .env.ci
