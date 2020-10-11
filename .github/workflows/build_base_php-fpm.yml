@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Run hadolint on Dockerfile
-        run: "docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --ignore DL3007 - < .ci/docker/php-fpm/base/Dockerfile"
+        run: "docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 --ignore DL3007 - < ci/docker/php-fpm/base/Dockerfile"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
