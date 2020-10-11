@@ -62,6 +62,4 @@ RUN chmod +x /docker-entrypoint.sh
 RUN chown www-data:daemon /opt/bitnami/php/tmp \
     && chmod 775 /opt/bitnami/php/tmp
 
-USER www-data
-
 CMD ["/docker-entrypoint.sh"]
