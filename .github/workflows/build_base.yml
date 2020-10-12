@@ -109,7 +109,7 @@ jobs:
       - run: |
           mv .env.ci ./application/.env
       
-            - name: Get Composer Cache Directory
+      - name: Get Composer Cache Directory
         id: composer-cache
         working-directory: ./application
         run: |
