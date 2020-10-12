@@ -34,6 +34,47 @@ jobs:
           cache-from: ghcr.io/pierreribault/laravel-test-php-fpm:base
           tags: ghcr.io/pierreribault/laravel-test-php-fpm:base
 
+  composer:
+    runs-on: ubuntu-latest
+    name: Publish php-fpm base
+    container:
+      image: composer:latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        working-directory: ./application
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Add nova repository
+        working-directory: ./application
+        run: |
+          composer config http-basic.nova.laravel.com "${{ secrets.LARAVEL_NOVA_USER}}" "${{ secrets.LARAVEL_NOVA_PASSWORD}}"
+
+      - name: Composer install
+        working-directory: ./application
+        run: |
+          composer install --ignore-platform-reqs --no-progress
+
+      - name: Artifacts vendor
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts-vendor
+          path: |
+            application/bootstrap/cache/packages.php
+            application/bootstrap/cache/services.php
+            application/vendor/**
+            application/composer.lock
+
   create-env:
     name: Create environment ci file
     runs-on: ubuntu-latest
@@ -109,33 +150,15 @@ jobs:
       - run: |
           mv .env.ci ./application/.env
       
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        working-directory: ./application
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - uses: actions/cache@v2
+      - uses: actions/download-artifact@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-            
-      - name: Add nova repository
-        working-directory: ./application
-        run: |
-          composer config http-basic.nova.laravel.com "${{ secrets.LARAVEL_NOVA_USER}}" "${{ secrets.LARAVEL_NOVA_PASSWORD}}"
-
-      - name: Composer install
-        working-directory: ./application
-        run: |
-          composer install --ignore-platform-reqs --no-progress
+          name: artifacts-vendor
 
       - name: Artisan key generate
         working-directory: ./application
         run: |
           php artisan key:generate
+          php artisan config:clear
 
       - name: PHPunit
         working-directory: ./application
