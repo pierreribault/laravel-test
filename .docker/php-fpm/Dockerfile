@@ -21,7 +21,7 @@ RUN chown www-data:daemon /opt/bitnami/php/tmp \
     && chmod 775 /opt/bitnami/php/tmp
 
 # Copy project
-COPY --chown=www-data:www-data application /app
+COPY --chown=www-data:www-data ./application /app
 RUN chown www-data:www-data /app
 
 USER www-data

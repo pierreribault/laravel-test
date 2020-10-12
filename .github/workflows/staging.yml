@@ -36,7 +36,7 @@ jobs:
         working-directory: ./application
         run: |
           composer install --ignore-platform-reqs --no-progress
-          ls -al
+          pwd
 
       - uses: actions/cache@v2
         with:
