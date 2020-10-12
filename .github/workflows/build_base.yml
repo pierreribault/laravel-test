@@ -175,7 +175,7 @@ jobs:
       - name: PHPStan
         uses: docker://jakzal/phpqa:php7.3-alpine
         with:
-          args: phpstan analyze src/ -l 1
+          args: phpstan analyze ./application -l 1
 
       - name: PHP-CS
         uses: docker://jakzal/phpqa:php7.3-alpine
