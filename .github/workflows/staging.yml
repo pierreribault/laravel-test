@@ -1,4 +1,4 @@
-name: CI Workflow
+name: Staging deploy
 on:
   push:
     branches:
