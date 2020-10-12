@@ -35,8 +35,8 @@ jobs:
           tags: ghcr.io/pierreribault/laravel-test-php-fpm:base
 
   composer:
+    name: Composer dependencies
     runs-on: ubuntu-latest
-    name: Publish php-fpm base
     container:
       image: composer:latest
     steps:
