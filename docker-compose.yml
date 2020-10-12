@@ -1,10 +1,11 @@
-version: '3.8'
+version: '3.7'
 
 services:
   nginx:
-    build:
-      context: .
-      dockerfile: .ci/docker/nginx/Dockerfile
+    image: ghcr.io/pierreribault/laravel-test-nginx:staging
+    #build:
+    #  context: .
+    #  dockerfile: .ci/docker/nginx/Dockerfile
     working_dir: /app
     init: true
     restart: always
@@ -20,9 +21,10 @@ services:
       - WAIT_HOSTS=php-fpm:9000
 
   php-fpm:
-    build:
-      context: .
-      dockerfile: .ci/docker/php-fpm/Dockerfile
+    image: ghcr.io/pierreribault/laravel-test-php-fpm:staging
+    #build:
+    #  context: .
+    #  dockerfile: .ci/docker/php-fpm/Dockerfile
     working_dir: /app
     init: true
     restart: always
@@ -30,7 +32,7 @@ services:
       - laravel_internal
     volumes:
       - storage:/app/storage
-      - ./app/.env.prod:/app/.env
+      - ./application/.env.prod:/app/.env
     environment:
       - WAIT_HOSTS=redis:6379, mariadb:3306
     labels:
@@ -39,9 +41,7 @@ services:
       ofelia.job-exec.horizon.command: "php /app/artisan schedule:run"
 
   ofelia:
-    build:
-      context: .docker/ofelia
-      dockerfile: Dockerfile
+    image: ghcr.io/pierreribault/ofelia:latest
     init: true
     networks:
       - laravel_internal

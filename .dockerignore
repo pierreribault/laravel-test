@@ -1,1 +1,3 @@
 **/node_modules
+application/.lando.yml
+application/.env*
