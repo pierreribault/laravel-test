@@ -85,7 +85,7 @@ jobs:
         run: |
           npm install
 
-      - name: Npm install
+      - name: Npm run production
         working-directory: ./application
         run: |
           npm run production

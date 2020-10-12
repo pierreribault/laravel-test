@@ -36,6 +36,7 @@ jobs:
         working-directory: ./application
         run: |
           composer install --ignore-platform-reqs --no-progress
+          ls -al
 
       - uses: actions/cache@v2
         with:
@@ -53,7 +54,7 @@ jobs:
         run: |
           npm install
 
-      - name: Npm install
+      - name: Npm run production
         working-directory: ./application
         run: |
           npm run production
