@@ -143,14 +143,9 @@ jobs:
         run: |
           php artisan test
 
-  phpstan:
-    name: PHPStan tests
+  static-code-analysis:
+    name: Static Code Analysis
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/pierreribault/laravel-test-php-fpm:base
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.PACKAGE_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       
@@ -177,48 +172,12 @@ jobs:
         run: |
           composer install --ignore-platform-reqs --no-progress
 
-      - name: PHPStan tests
-        working-directory: ./application
-        continue-on-error: true
-        run: |
-          php ./vendor/bin/phpstan analyse
-
-  phpcs:
-    name: PHPCs tests
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/pierreribault/laravel-test-php-fpm:base
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.PACKAGE_TOKEN }}
-    steps:
-      - uses: actions/checkout@v2
-      
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        working-directory: ./application
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - uses: actions/cache@v2
+      - name: PHPStan
+        uses: docker://jakzal/phpqa:php7.3-alpine
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+          args: phpstan analyze src/ -l 1
 
-      - name: Add nova repository
-        working-directory: ./application
-        run: |
-          composer config http-basic.nova.laravel.com "${{ secrets.LARAVEL_NOVA_USER}}" "${{ secrets.LARAVEL_NOVA_PASSWORD}}"
-
-      - name: Composer install
-        working-directory: ./application
-        run: |
-          composer install --ignore-platform-reqs --no-progress
-
-      - name: PHPCs tests
-        working-directory: ./application
-        continue-on-error: true
-        run: |
-          phpcs --standard=PSR2 ./application/app
+      - name: PHP-CS
+        uses: docker://jakzal/phpqa:php7.3-alpine
+        with:
+          args: phpcs --standard=PSR2 ./application/app
