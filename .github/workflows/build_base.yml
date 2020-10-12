@@ -72,7 +72,7 @@ jobs:
           path: |
             application/bootstrap/cache/packages.php
             application/bootstrap/cache/services.php
-            application/vendor/**
+            application/vendor
             application/composer.lock
 
   create-env:
