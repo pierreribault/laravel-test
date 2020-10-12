@@ -172,10 +172,10 @@ jobs:
         run: |
           composer install --ignore-platform-reqs --no-progress
 
-      - name: PHPStan
-        uses: docker://jakzal/phpqa:php7.3-alpine
-        with:
-          args: phpstan analyze ./application -l 1
+      #- name: PHPStan
+      #  uses: docker://jakzal/phpqa:php7.3-alpine
+      #  with:
+      #    args: phpstan analyze ./application -l 1
 
       - name: PHP-CS
         uses: docker://jakzal/phpqa:php7.3-alpine
