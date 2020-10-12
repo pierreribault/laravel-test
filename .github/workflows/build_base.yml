@@ -107,6 +107,7 @@ jobs:
           name: environment-ci
       
       - run: |
+          ls -l
           mv .env.ci ./application/.env
       
       - name: Get Composer Cache Directory
