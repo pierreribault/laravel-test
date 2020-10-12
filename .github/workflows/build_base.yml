@@ -134,7 +134,7 @@ jobs:
   phpunit:
     name: PHPunit tests
     runs-on: ubuntu-latest
-    needs: [php-fpm, create-env]
+    needs: [php-fpm, create-env, composer]
     container:
       image: ghcr.io/pierreribault/laravel-test-php-fpm:base
       credentials:
